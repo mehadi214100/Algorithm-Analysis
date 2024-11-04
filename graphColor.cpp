@@ -1,68 +1,58 @@
-#include <iostream>
-#include <vector>
-
+#include<bits/stdc++.h>
 using namespace std;
 
-// NextValue function to find the next valid color for vertex `k`
-void NextValue(int k, vector<vector<int>>& graph, int m, vector<int>& colors) {
-    int n = graph.size();
-    while (true) {
-        colors[k] = (colors[k] + 1) % (m + 1);  // Try the next color
-        if (colors[k] == 0) {
-            return;  // No color possible, backtrack
-        }
-        
-        // Check if the color assignment is valid
+bool NextValue(int k,vector<vector<int>>&graphs,int m,vector<int>&result){
+    int n = graphs.size();
+    while(true){
+        result[k] = (result[k]+1)%(m+1);
+        if(result[k]==0) return false;
         bool valid = true;
-        for (int j = 0; j < n; ++j) {
-            if (graph[k][j] == 1 && colors[k] == colors[j]) {  // Adjacent vertex has the same color
+        for(int j=0;j<n;j++){
+            if(graphs[k][j]==1 && result[k]==result[j]){
                 valid = false;
                 break;
             }
         }
-        
-        if (valid) return;  // Found a valid color
+        if(valid) return true;
     }
 }
 
-// Recursive function to solve the m-coloring problem
-void mColoring(int k, vector<vector<int>>& graph, int m, vector<int>& colors) {
-    int n = graph.size();
-    while (true) {
-        NextValue(k, graph, m, colors);
-        if (colors[k] == 0) return;  // No color possible, backtrack
-        
-        if (k == n - 1) {
-            // A valid coloring is found, print the solution
-            for (int i = 0; i < n; ++i) {
-                cout << colors[i] << " ";
-            }
-            cout << endl;
-        } else {
-            mColoring(k + 1, graph, m, colors);  // Recurse for the next vertex
+bool graphColoring(int k,vector<vector<int>>&graphs,int m,vector<int>&result){
+    int n = graphs.size();
+    while(true){
+        NextValue(k,graphs,m,result);
+        if(result[k]==0) return false;
+        if(k==n-1){
+                return true;
+        }else{
+            return graphColoring(k+1,graphs,m,result);
         }
     }
 }
 
-// Function to initialize the graph coloring process
-void graphColoring(vector<vector<int>>& graph, int m) {
-    int n = graph.size();
-    vector<int> colors(n, 0);  // Initialize colors to 0 (no color assigned)
-    mColoring(0, graph, m, colors);
+bool Coloring(vector<vector<int>>&graphs,int m){
+    int n = graphs.size();
+    vector<int>result(n,0);
+    return graphColoring(0,graphs,m,result);
 }
 
-int main() {
-    // Define the graph as an adjacency matrix
-    vector<vector<int>> graph = {
-        {0, 1, 1, 1},
-        {1, 0, 1, 0},
-        {1, 1, 0, 1},
-        {1, 0, 1, 0}
+int main(){
+    vector<vector<int>>graph = {
+        {0,1,0,0,1,1,1},
+        {1,0,1,1,0,0,0},
+        {0,1,0,1,0,0,1},
+        {0,1,1,0,1,0,0},
+        {1,0,0,1,0,1,1},
+        {1,0,0,0,1,0,1},
+        {1,0,1,0,1,1,0}
     };
-    
-    int m = 3;  // Number of colors
-    cout << "Color assignments for the graph:\n";
-    graphColoring(graph, m);
-    
-    return 0;
+    for(int i=1;i<=graph.size();i++){
+        if(Coloring(graph,i)){
+            cout<<"Result : "<<i;
+            break;
+        }
+    }
 }
+
+
+
